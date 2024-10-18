@@ -1,5 +1,5 @@
 <div align="center">
-<img src="https://github.com/user-attachments/assets/8b870300-c9eb-4d2c-9e9b-89742ef745ed" />
+<img src="" />
   
 ### 더욱 슬기로운 대덕인재개발원 생활을 위해, 슬.대.생 🌞
 
@@ -36,12 +36,12 @@
 
 ## 🔀 ERD Design
 <div align="center">
-  <img src="https://github.com/user-attachments/assets/95a1e86e-1bea-4ae6-abb7-b73446fd6cfc" />
+  <img src="" />
 </div>
 
 ## 🖥 서비스 화면
 <div align="center">
-<img src="https://github.com/user-attachments/assets/01c4af34-eac6-47b8-974e-9e33bbb51722" />
+<img src="" />
   
 ### 슬.대.생 메인페이지
 </div>
