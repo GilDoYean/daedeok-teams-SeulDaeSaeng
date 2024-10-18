@@ -40,12 +40,12 @@
 
 ## 🔀 ERD Design
 <div align="center">
-  <img src="" />
+  <img src="https://github.com/user-attachments/assets/af638fd8-657d-4ad8-9f40-6c967581a116" />
 </div>
 
 ## 🖥 서비스 화면
 <div align="center">
-<img src="" />
+<img src="https://github.com/user-attachments/assets/127ab3b1-45b7-490e-be27-f06b7399770f" />
   
 ### 슬.대.생 메인페이지
 </div>
