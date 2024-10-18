@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="admin">
+
+   <select id="selectmemList" resultMap="listMap">
+      SELECT 
+    m.USERS_NO,
+    m.MEM_NAME,
+    m.MEM_NICK,
+    m.MEM_BIRTH,
+    m.MEM_EMAIL,
+    m.MEM_TEL,
+    m.MEM_CLASS,
+    m.MEM_REGDT,
+    m.ADDR_NO
+   FROM member m, users u 
+   WHERE 
+         m.USERS_NO = u.USERS_NO AND  u.USERS_YN = 'S'
+   </select>
+   
+   
+   <select id="selectallList" resultMap="listMap" >
+   SELECT 
+    m.USERS_NO,
+    m.MEM_NAME,
+    m.MEM_NICK,
+    m.MEM_BIRTH,
+    m.MEM_EMAIL,
+    m.MEM_TEL,
+    m.MEM_CLASS,
+    m.MEM_REGDT,
+    m.ADDR_NO
+
+	FROM member m, users u 
+	WHERE 
+   		m.USERS_NO = u.USERS_NO AND  u.USERS_YN = 'Y'
+	</select>
+	
+	
+<!-- 	<select id="selectmember" resultType="kr.or.ddit.admin.vo.memberReqVO"> -->
+<!-- 		select * from member -->
+<!-- 		where USERS_NO = #{usersNo} -->
+	
+<!-- 	</select> -->
+	
+<!-- 	<select id="selectmember2" resultType="kr.or.ddit.admin.vo.memberReqVO"> -->
+<!-- 		select * from member -->
+<!-- 		where USERS_NO = #{usersNo} --> 
+	
+<!-- 	</select> -->
+	
+	
+	<select id="selectmember" resultMap="listMap" parameterType="int">
+		select *
+		from member
+		where USERS_NO = #{usersNo}
+	</select>
+	
+	
+	
+	
+ 	<update id="adminAccept" parameterType="int">
+	UPDATE USERS SET USERS_YN = 'Y' 
+	WHERE USERS_NO = #{usersNo}
+ 	</update>
+
+
+
+   
+   <resultMap type="kr.or.ddit.admin.vo.MemberReqVO" id="listMap">
+      <result property="usersNo" column="USERS_NO"/>
+      <result property="memName" column="MEM_NAME"/>
+      <result property="memNick" column="MEM_NICK"/>
+      <result property="memBirth" column="MEM_BIRTH"/>
+      <result property="memEmail" column="MEM_EMAIL"/>
+      <result property="memTel" column="MEM_TEL"/>
+      <result property="memClass" column="MEM_CLASS"/>
+      <result property="memRegdt" column="MEM_REGDT"/>
+      <result property="addrNo" column="ADDR_NO"/>
+   </resultMap>
+   
+</mapper>

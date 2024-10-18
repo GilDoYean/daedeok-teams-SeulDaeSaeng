@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="report">
+
+ <select id="selectReportList" resultMap="reportMap">
+ select
+ 	* from board 
+ 		where trim(REPORT_YN) ='Y'
+ 		and BOARD_YN ='Y'
+ </select>
+ 
+ <select id="selectallList" resultMap="reportMap">
+  select
+ 	* from board 
+ 		where trim(REPORT_YN) ='Y'
+ 	    ORDER BY 
+        CASE 
+            WHEN BOARD_YN = 'Y' THEN 1 
+            ELSE 2 
+        END, 
+        BOARD_AT DESC
+<!--  		and BOARD_YN ='Y' -->
+ </select>
+  
+ <select id="reportmemberList" resultMap="listMap">
+<!--  	select m.* -->
+<!--  		from member m -->
+<!--  			inner join board b on m.USERS_NO = b.USERS_NO -->
+<!--  				where b.REPORT_YN = 'Y' -->
+
+ SELECT m.USERS_NO, m.MEM_NAME, m.MEM_NICK, m.MEM_CLASS, m.REPORT_NO, 
+ 		COUNT(b.REPORT_YN) AS reportCount
+   		 FROM member m
+    		INNER JOIN board b ON m.USERS_NO = b.USERS_NO
+    			WHERE b.REPORT_YN = 'Y'
+    			GROUP BY  m.USERS_NO, m.MEM_NAME, m.MEM_NICK, m.MEM_CLASS, m.REPORT_NO
+    	ORDER BY REPORT_NO DESC
+ </select>
+ 
+ <update id="reportNo" parameterType="int">
+  	UPDATE MEMBER SET REPORT_NO = REPORT_NO + 1
+  		WHERE USERS_NO = (SELECT USERS_NO FROM BOARD WHERE BOARD_NO =#{boardNo})
+ </update>
+  
+  
+  <update id="updateBoardYn" parameterType="int" >
+  UPDATE BOARD SET BOARD_YN = 'N' 
+	WHERE BOARD_NO = #{boardNo}
+  </update>
+
+
+
+<resultMap type="kr.or.ddit.admin.vo.MemberReqVO" id="listMap">
+      <result property="usersNo" column="USERS_NO"/>
+      <result property="memName" column="MEM_NAME"/>
+      <result property="memNick" column="MEM_NICK"/>
+      <result property="memBirth" column="MEM_BIRTH"/>
+      <result property="memEmail" column="MEM_EMAIL"/>
+      <result property="memTel" column="MEM_TEL"/>
+      <result property="memClass" column="MEM_CLASS"/>
+      <result property="memRegdt" column="MEM_REGDT"/>
+      <result property="addrNo" column="ADDR_NO"/>
+      <result property="reportNo" column="REPORT_NO"/>
+      
+  </resultMap>
+   
+   
+   	
+<resultMap type="kr.or.ddit.board.vo.BoardVO" id="reportMap"> <!-- 1 -->
+<result column="board_no" property="boardNo"/>
+<result column="board_level" property="boardLevel"/>
+<result column="board_title" property="boardTitle"/>
+<result column="board_con" property="boardCon"/>
+<result column="board_at" property="boardAt"/>
+<result column="board_yn" property="boardYn"/>
+<result column="board_hit" property="boardHit"/>
+<result column="file_no" property="fileNo"/>
+<result column="users_no" property="usersNo"/>
+</resultMap>
+		
+
+	
+  
+</mapper>

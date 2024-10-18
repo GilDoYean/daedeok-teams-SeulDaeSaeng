@@ -1,0 +1,359 @@
+#memo .taskNav {
+    background: var(--color-gray-100);
+    display: flex;
+    border-radius: 3px;
+    box-shadow: 0 0 4px rgba(129, 148, 153, 0.25);
+    margin-bottom: 15px;
+}
+
+#memo .taskNav_item {
+    width: 33.3%;
+    text-align: center;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    position: relative;
+    color: var(--color-gray-600);
+    font-size: 1em;
+    font-weight: 400;
+    text-decoration: none;
+}
+
+#memo .taskNav_item.active, 
+#memo .taskNav_item:hover, 
+#memo .taskNav_item:active {
+    color: var(--color-orange-900);
+}
+
+#memo .taskNav_item:after {
+    content: '';
+    width: 0;
+    height: 4px;
+    background: var(--color-orange-100);
+    border-radius: 4px;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 0;
+    transition: width 0.3s;
+}
+
+#memo .taskNav_item.active:after, 
+#memo .taskNav_item:hover:after, 
+#memo .taskNav_item:active:after {
+    width: 100%;
+}
+
+#memo .text_oneline {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+}
+
+#memo .taskList li {
+    position: relative;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 6px rgba(129, 148, 153, 0.2);
+    margin-top: 6px;
+    margin-bottom: 6px;
+    width: 100%;
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+#memo .taskList li.priority {
+    border: 2px solid #f8dcba;
+    background: #fcf9d3;
+}
+
+#memo .taskList li.priority .itemStar {
+    color: #eab01f;
+}
+
+#memo .taskList li.completed {
+    border: 2px solid var(--color-orange-300);
+}
+
+#memo .itemDetail {
+    width: 75%;
+    padding: 10px 5px 10px 45px;
+}
+
+#memo .itemChange {
+    min-height: 98px;
+    width: 25%;
+    padding: 10px 15px 10px 45px;
+    justify-content: flex-end;
+    align-items: center;
+    display: flex;
+}
+
+#memo .itemMark {
+    font-size: 2em;
+    color: var(--color-gray-300);
+    margin: 10px;
+    transition: color ease .25s;
+}
+#memo .itemMark.act {
+    color: var(--color-orange-900);
+}
+
+#memo .itemMark:hover {
+    cursor: pointer;
+    color: var(--color-gray-500);
+}
+
+#memo .itemIcon {
+    display: inline-block;
+    font-size: 1rem;
+    color: #c5dcea;
+    margin-right: 6px;
+    margin-top: 7px;
+}
+
+#memo .itemIcon:hover {
+    cursor: pointer;
+    color: #bed7e7;
+}
+
+#memo .setTime {
+    color: #db9633;
+    font-size: 1rem;
+    margin-bottom: -6px;
+    margin-top: 5px;
+}
+
+#memo .itemDetail label {
+    cursor: pointer;
+}
+
+#memo .itemDetail input {
+    display: none;
+}
+
+#memo .itemDetail input + label:before {
+    content: '';
+    position: absolute;
+    width: 45px;
+    height: 45px;
+    left: -22.5px;
+    top: 27px;
+    border-radius: 100%;
+    background: #c9deeb;
+    margin-right: 10px;
+    box-shadow: 0 0 6px rgba(129, 148, 153, 0.3);
+}
+
+#memo .itemDetail input + label:after {
+    content: '';
+    position: absolute;
+    left: -2px;
+    top: 40px;
+    width: 8px;
+    height: 16.5px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+
+#memo .completed input + label,
+#memo .itemDetail input:checked + label {
+    text-decoration: line-through;
+}
+
+#memo .completed input + label:before,
+#memo .itemDetail input:checked + label:before {
+    background: var(--color-orange-400);
+    box-shadow: inset -4px -5px 6px rgba(184, 184, 184, 0.35);
+}
+
+#memo .add-items {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+}
+
+#memo .btn {
+    color: #fff;
+    box-shadow: 0 2px 4px #8e8e8e;
+    cursor: pointer;
+    border: none;
+    width: 50%;
+    padding: 20px 10px;
+    font-size: 1rem;
+}
+
+#memo .btn_cancel {
+    background: #e93043;
+    border-radius: 0 0 0 4px;
+}
+
+#memo .btn_cancel:hover,
+#memo .btn_cancel:active {
+    background: #ff2439;
+}
+
+#memo .btn_add {
+    background: var(--bs-link-hover-color);
+    border-radius: 0 0 4px 0;
+}
+
+#memo .btn_add:hover, #memo .btn_add:active {
+    background: var(--bs-link-color);
+}
+
+#memo .btn_addList {
+    cursor: pointer;
+    color: var(--color-white);
+    font-size: 1em;
+    font-weight: 600;
+    background: var(--color-orange-900);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    box-shadow: 0 0 5px var(--color-gray-500);
+    border-radius: 10px;
+    transition: box-shadow 0.3s;
+}
+
+#memo .btn_addList:hover {
+    box-shadow: 0 0 0px var(--color-gray-500);
+}
+
+#memo .btn_addList:active {
+    box-shadow: inset 0 0 0px var(--color-gray-500);
+}
+
+#memo .btn_addList .text {
+    color: var(--color-white);
+    padding: 10px 15px;
+    width: 100%;
+    text-align: center;
+}
+
+#memo .addList {
+    display: none;
+    width: 100%;
+    background: var(--color-gray-100);
+    padding-top: 20px;
+}
+#memo .addList.act {
+    display: block;
+}
+
+#memo .btn_addList.active .addList {
+    display: block;
+}
+
+#memo .addList_input.control {
+    width: 0;
+    margin-left: 10px;
+    padding: 0;
+    border: 0;
+    font-size: 1em;
+    transform-origin: bottom;
+}
+
+#memo .btn_addList.active .addList_input {
+    width: calc(100% - 155px);
+    padding: 5px 10px;
+    border-width: 2px;
+}
+
+#memo .addList_icon {
+    font-size: 1em;
+    text-align: center;
+    color: var(--color-gray-900);
+    width: 20px;
+    display: inline-block;
+    margin-right: 5px;
+}
+
+#memo .upload_file input[type=file] {
+    position: relative;
+    cursor: pointer;
+    background: var(--color-gray-100);
+    font-size: 1em;
+    padding: 4px 0;
+    margin-top: 4px;
+    border-radius: 3px;
+    border: 1px solid var(--color-gray-300);
+    color: var(--color-gray-600);
+}
+
+#memo .upload_file input[type=file]:before {
+    content: "Select";
+    position: absolute;
+    top: -1px;
+    color: #fff;
+    background-color: var(--color-gray-700);
+    padding: 8px 18px;
+    border-radius: 3px 0 0 3px;
+}
+
+#memo .addList_control {
+    padding: 0 40px;
+    justify-content: space-between;
+    display: flex;
+    margin-top: 2px;
+    margin-bottom: 15px;
+}
+
+#memo .addList_title {
+    padding: 0 40px;
+    margin-bottom: 5px;
+    color: var(--color-gray-700);
+}
+
+#memo .select_priority {
+    padding: 0 40px;
+}
+
+#memo .select_priority input + label {
+    margin-right: 20px;
+    color: #333;
+    cursor: pointer;
+}
+
+#memo .control {
+    border-radius: 3px;
+    border: 1px solid var(--color-gray-300);
+    padding: 8px;
+    outline-color: var(--color-orange-900);
+}
+
+#memo .control:focus {
+    border: 2px solid #88bad3;
+}
+
+#memo .control_input {
+    font-size: 1em;
+    font-weight: 400;
+    width: calc(50% - 5px);
+}
+
+#memo .control_textarea {
+    width: 100%;
+    font-size: 1em;
+}
+
+#memo ::-webkit-input-placeholder {
+    color: #b5b5b5;
+}
+
+#memo ::-moz-placeholder {
+    color: #b5b5b5;
+}
+
+#memo :-ms-input-placeholder {
+    color: #b5b5b5;
+}
+
+#memo :-moz-placeholder {
+    color: #b5b5b5;
+}

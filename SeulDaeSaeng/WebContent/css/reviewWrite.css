@@ -1,0 +1,51 @@
+@charset "UTF-8";
+
+label.form-check-label {
+    position: relative;
+    width: 23px;
+    height: 28px;
+}
+
+label.form-check-label I {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 23px;
+    height: 28px;
+    transition: opacity 0.3s;
+    cursor: pointer;
+}
+label.form-check-label i.bi.bi-star-fill {
+    opacity: 0;
+}
+label.form-check-label:hover i.bi.bi-star-fill,
+label.form-check-label:hover ~ label i.bi.bi-star-fill{
+    opacity: 0.6;	
+}
+.form-check-input[type=radio]:checked~.form-check-label i.bi.bi-star-fill {
+    opacity: 1;
+}
+.starBox.is-invalid p,
+.starBox.is-invalid{
+	color: var(--bs-danger) !important;
+}
+.starBox.is-valid{
+	color: var(--bs-warning) !important;
+}
+.starBox{
+	flex-direction: row-reverse;
+    justify-content: flex-end;
+}
+.score{
+	display: none;
+}
+
+#star5.form-check-input[type=radio]:checked ~ p .score.score5{ display: inline;}
+#star4.form-check-input[type=radio]:checked ~ p .score.score4{ display: inline;}
+#star3.form-check-input[type=radio]:checked ~ p .score.score3{ display: inline;}
+#star2.form-check-input[type=radio]:checked ~ p .score.score2{ display: inline;}
+#star1.form-check-input[type=radio]:checked ~ p .score.score1{ display: inline;}
+
+#star0.form-check-input[type=radio]:checked ~ p .score.score0{ display: inline;}
+
+.form-check-input[type=radio]:checked ~ p{ font-weight: 600;}

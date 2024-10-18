@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="restaurant">
+
+<resultMap type="kr.or.ddit.board.vo.FileDetailVO" id="fileMap"> <!-- 1 -->
+<result column="file_no" property="fileNo"/>
+<result column="file_savepath" property="fileSavepath"/>
+<result column="file_ogname" property="fileOgname"/>
+<result column="file_savednm" property="fileSavednm"/>
+<result column="file_size" property="fileSize"/>
+<result column="file_ext" property="fileExt"/>
+<result column="file_dt" property="fileDt"/>
+<result column="file_level" property="fileLevel"/>
+</resultMap>
+
+
+<resultMap type="kr.or.ddit.member.vo.MemberVO" id="memberMap"> <!-- 1 -->
+<result column="users_no" property="usersNo"/>
+<result column="mem_name" property="memName"/>
+<result column="mem_nick" property="memNick"/>
+<result column="mem_birth" property="memBirth"/>
+<result column="mem_email" property="memEmail"/>
+<result column="mem_tel" property="memTel"/>
+<result column="mem_class" property="memClass"/>
+<result column="mem_regdt" property="memRegdt"/>
+<result column="addr_no" property="addrNo"/>
+</resultMap>
+
+<!-- <resultMap type="kr.or.ddit.restaurant.vo.RestsVO" id="restsMap"> 1
+<result column="rest_bizno" property="restBizno"/>
+<result column="rest_name" property="restName"/>
+<result column="mcls_id" property="mclsId"/>
+<result column="scls_id" property="sclsId"/>
+<result column="addr_no" property="addrNo"/>
+<result column="distance" property="distance"/>
+</resultMap> -->
+
+<resultMap type="kr.or.ddit.restaurant.vo.RestaurantVO" id="restaurantMap">
+<result property="addrNo" column="ADDR_NO"/>
+<result property="restBizno" column="REST_BIZNO"/>
+<result property="name" column="NAME"/>
+<result property="distance" column="DISTANCE"/>
+<result property="mcls" column="MCLS"/>
+<result property="scls" column="SCLS"/>
+<result property="mclsName" column="MCLS_NAME"/>
+<result property="sclsName" column="SCLS_NAME"/>
+<result property="addrPost" column="ADDR_POST"/>
+<result property="addrBasic" column="ADDR_BASIC"/>
+<result property="addrDetail" column="ADDR_DETAIL"/>
+<result property="lon" column="LON"/>
+<result property="lat" column="LAT"/>
+<result property="reviewNo" column="REVIEW_NO"/>
+<result property="usersNo" column="USERS_NO"/>
+<result property="nickName" column="NICK_NAME"/>
+<result property="bizNo" column="BIZNO"/>
+<result property="reviewStar" column="REVIEW_STAR"/>
+<result property="reviewText" column="REVIEW_TEXT"/>
+<result property="reviewYn" column="REVIEW_YN"/>
+<result property="reviewDate" column="REVIEW_DATE"/>
+<result property="fileNo" column="FILE_NO"/>
+<result property="fileSavepath" column="FILE_SAVEPATH"/>
+<result property="fileOgname" column="FILE_OGNAME"/>
+<result property="fileSavednm" column="FILE_SAVEDNM"/>
+<result property="fileSize" column="FILE_SIZE"/>
+<result property="fileExt" column="FILE_EXT"/>
+<result property="fileDt" column="FILE_DT"/>
+<result property="likeCount" column="LIKE_COUNT"/>
+</resultMap>
+
+
+	<select id="restaurantList" parameterType="hashMap" resultType="restVO">
+		<!-- 식당 카테고리별 리스트 -->
+		SELECT *
+		FROM (
+		    SELECT 
+		        ADDR_NO addrNo, REST_BIZNO restBizno, NAME name, MCLS mcls, MCLS_NAME mclsName, SCLS scls, SCLS_NAME sclsName, ADDR_BASIC addrBasic, LIKE_COUNT likeCount, AVG_REVIEW_STAR avgReviewStar, DISTANCE,
+		        ROWNUM AS rnum
+		    FROM (
+		        SELECT 
+			        ADDR_NO, REST_BIZNO, NAME, MCLS, MCLS_NAME, SCLS, SCLS_NAME, ADDR_BASIC, LIKE_COUNT, DISTANCE,
+               		COALESCE(AVG(REVIEW_STAR), -1) AS AVG_REVIEW_STAR
+		        FROM RESTVIEW
+		        WHERE 1 = 1
+				<if test="mcls!='all' and mcls!=null and mcls!=''">
+					AND MCLS = #{mcls}
+				</if>
+				<if test="scls!='all' and scls!=null and scls!=''">
+					AND SCLS = #{scls}
+				</if>
+		        GROUP BY ADDR_NO, REST_BIZNO, NAME, MCLS, MCLS_NAME, SCLS, SCLS_NAME, ADDR_BASIC, LIKE_COUNT, DISTANCE
+		        <if test="order==null or order==''">
+					ORDER BY DISTANCE ASC
+				</if>
+				<if test="order=='distanceUp'">
+					ORDER BY DISTANCE ASC
+				</if>
+				<if test="order=='likeUp'">
+					ORDER BY LIKE_COUNT DESC 
+				</if>
+				<if test="order=='starUp'">
+					ORDER BY AVG_REVIEW_STAR DESC 
+				</if>
+				<if test="order=='starDonw'">
+					ORDER BY AVG_REVIEW_STAR ASC 
+				</if>
+				<if test="order=='nameUp'">
+					ORDER BY NAME ASC 
+				</if>
+				<if test="order=='nameDonw'">
+					ORDER BY NAME DESC
+				</if>
+		    )
+		) WHERE rnum BETWEEN #{firstpost} AND #{postperpage}
+	</select>
+	
+	<select id="restaurantTypeTotal" parameterType="hashMap" resultType="int">
+		SELECT COUNT(*) AS total_count
+		FROM RESTVIEW
+		WHERE 1=1
+		<if test="mcls!='all' and mcls!=null and mcls!=''">
+			AND MCLS = #{mcls}
+		</if>
+		<if test="scls!='all' and scls!=null and scls!=''">
+			AND SCLS = #{scls}
+		</if>
+	</select>
+	
+	<select id="selectMclsName" parameterType="hashMap" resultType="String" >
+		SELECT MCLS_NAME FROM RESTMCLS WHERE MCLS_ID = #{mcls}
+	</select>
+	
+	<select id="selectSclsName" parameterType="hashMap" resultType="String" >
+		SELECT SCLS_NAME FROM RESTSCLS WHERE MCLS_ID = #{mcls} AND SCLS_ID = #{scls}
+	</select>
+	
+	<select id="selectMclsList" resultType="restVO" >
+		SELECT MCLS_NAME mclsName, MCLS_ID mcls FROM RESTMCLS WHERE MCLS_YN = 'Y'
+	</select>
+	
+	<select id="selectSclsList" parameterType="String" resultType="restVO" >
+		SELECT SCLS_NAME sclsName, MCLS_ID mcls, SCLS_ID scls FROM RESTSCLS WHERE MCLS_ID = #{mcls} AND SCLS_YN = 'Y'
+	</select>
+	
+	<select id="selectSclsList2" resultType="restVO" >
+		SELECT SCLS_NAME sclsName, MCLS_ID mcls, SCLS_ID scls FROM RESTSCLS WHERE SCLS_YN = 'Y'
+	</select>
+	
+	<select id="selectRest" parameterType="String" resultType="restVO">
+	  SELECT REST_BIZNO restBizno, NAME, MCLS, MCLS_NAME mclsName, SCLS, SCLS_NAME sclsName, 
+	         ADDR_BASIC AddrBasic, LON, LAT, LIKE_COUNT likeCount, COALESCE(COUNT(REVIEW_NO),0) AS totalReview, 
+	         COALESCE(AVG(REVIEW_STAR), -1) AS avgReviewStar
+	  FROM RESTVIEW
+	  WHERE REST_BIZNO = #{restBizno}
+	  GROUP BY REST_BIZNO, NAME, MCLS, MCLS_NAME, SCLS, SCLS_NAME, ADDR_BASIC, LON, LAT, LIKE_COUNT
+	</select>
+	
+	<select id="selectRestReview" parameterType="String" resultType="restVO">
+	  	SELECT REVIEW_NO reviewNo, 
+		       USERS_NO usersNo, 
+		       NICK_NAME nickName, 
+		       REVIEW_STAR reviewStar, 
+		       REVIEW_TEXT reviewText, 
+		       FILE_NO fileNo, 
+		       FILE_SAVEPATH fileSavepath, 
+		       REVIEW_DATE reviewDate 
+		FROM (
+		    SELECT REVIEW_NO, 
+		           USERS_NO, 
+		           NICK_NAME, 
+		           REVIEW_STAR, 
+		           REVIEW_TEXT, 
+		           FILE_NO, 
+		       	   FILE_SAVEPATH, 
+		           REVIEW_DATE, 
+		           ROWNUM AS RNUM
+		    FROM RESTVIEW
+		    WHERE REST_BIZNO = #{restBizno}
+		    AND REVIEW_NO IS NOT NULL
+		    ORDER BY REVIEW_DATE DESC
+		)
+		WHERE RNUM <![CDATA[<=]]> 3
+	</select>
+	
+	<select id="mainRestReview" resultType="restVO">
+		SELECT *
+		FROM (
+		    SELECT
+		        R.REVIEW_NO AS reviewNo,
+		        R.USERS_NO AS usersNo,
+		        R.REST_BIZNO AS restBizno,
+		        M.MEM_NICK AS nickName,
+		        R.REVIEW_STAR AS reviewStar,
+		        R.REVIEW_TEXT AS reviewText,
+		        R.FILE_NO AS fileNo,
+		        R.REVIEW_DATE AS reviewDate
+		    FROM
+		        REVIEW R
+		        JOIN USERS U ON R.USERS_NO = U.USERS_NO
+		        JOIN MEMBER M ON U.USERS_NO = M.USERS_NO
+		    ORDER BY
+		        R.REVIEW_DATE DESC
+		)
+		WHERE ROWNUM <![CDATA[<=]]> 5
+	</select>
+	
+	<select id="selectRestReviewAll" parameterType="hashMap" resultType="restVO">
+	  	SELECT REVIEW_NO reviewNo, USERS_NO usersNo, NICK_NAME nickName, REVIEW_STAR reviewStar, REVIEW_TEXT reviewText, FILE_NO fileNo, FILE_SAVEPATH fileSavepath, REVIEW_DATE reviewDate
+		FROM RESTVIEW
+		WHERE REST_BIZNO = #{restBizno}
+	    AND REVIEW_NO IS NOT NULL
+		<if test="order==null or order=='' or order=='letest'">
+			ORDER BY REVIEW_DATE DESC
+		</if>
+		<if test="order=='lste'">
+			ORDER BY REVIEW_DATE ASC
+		</if>
+		<if test="order=='starUp'">
+			ORDER BY REVIEW_STAR DESC 
+		</if>
+		<if test="order=='starDonw'">
+			ORDER BY REVIEW_STAR ASC 
+		</if>
+	</select>
+	
+	<select id="getFileList" parameterType="int" resultMap="fileMap">
+	      select *
+	        from file_detail
+	        where file_level = 5
+	        order by file_no desc
+	</select>
+   
+   <resultMap type="restLikeVO" id="likeRestMap">
+		<result property="restBizno" column="REST_BIZNO"/>
+		<result property="userNo" column="USERS_NO"/>
+		<result property="likeYn" column="LIKE_YN"/>
+	</resultMap>
+	
+	<select id="selectLikeRest" parameterType="string" resultMap="likeRestMap">
+		select * from LIKES WHERE REST_BIZNO = #{restBizno}
+	</select>
+	
+	<insert id="saveFile" parameterType="kr.or.ddit.board.vo.FileDetailVO" useGeneratedKeys="true">
+		<selectKey keyProperty="fileNo" resultType="int" order="BEFORE">
+			select seq_file.nextval from dual
+		</selectKey>
+		    insert into files(file_no,file_yn)
+	        values(#{fileNo},'Y')
+	</insert>
+	
+	<insert id="saveFileDetail" parameterType="kr.or.ddit.board.vo.FileDetailVO" useGeneratedKeys="true">
+	        insert into file_detail(file_no, file_savepath, file_ogname, file_savednm, file_size, file_ext, file_dt, file_level)
+	        values(#{fileNo}, #{fileSavepath}, #{fileOgname},#{fileOgname}, #{fileSize}, #{fileExt}, sysdate, #{fileLevel})
+	</insert>
+	
+	<insert id="insertReview" parameterType="reviewVO" useGeneratedKeys="true">
+		<selectKey keyProperty="reviewNo" resultType="int" order="BEFORE">
+			select seq_board.nextval from dual
+		</selectKey>
+		insert into REVIEW(
+			REVIEW_NO, USERS_NO, REST_BIZNO, REVIEW_STAR, REVIEW_TEXT, REVIEW_YN, FILE_NO, REVIEW_DATE
+		)values(
+			#{reviewNo}, #{usersNo}, #{restBizno}, #{reviewStar}, #{reviewText}, 'Y', #{fileNo}, SYSDATE
+		)
+	</insert>
+	
+	<insert id="insertMyLike" parameterType="restLikeVO" useGeneratedKeys="true">
+		<selectKey keyProperty="reviewNo" resultType="int" order="BEFORE">
+			select SEQ_RESTLIKE.nextval from dual
+		</selectKey>
+		insert into LIKES(
+			REST_BIZNO, USERS_NO, LIKE_YN
+		)values(
+			#{restBizno}, #{userNo}, 'Y'
+		)
+	</insert>
+	
+	<update id="deleteReview" parameterType="int">
+	    update REVIEW set REVIEW_YN = 'N' where REVIEW_NO =#{reviewNo}
+	</update>
+	
+	<select id="getLikeMemList" resultMap="memberMap">
+	    SELECT b.*
+        FROM member b
+		JOIN (
+		    SELECT DISTINCT a.users_no
+		    FROM likes a
+		) a ON a.users_no = b.users_no
+		ORDER BY b.users_no DESC
+	</select>
+	
+	<select id="getMyLikeList" parameterType="int" resultType="restVO">
+	        select 
+    b.rest_bizno restBizno, 
+    b.rest_name Name, 
+    a.mcls_name mclsName, 
+    d.addr_basic addrBasic, 
+    COALESCE(avg(e.review_star), 0) as avgReviewStar,
+    COUNT(*) as likeCount
+from 
+    restaurant b
+    join restmcls a on a.mcls_id = b.mcls_id 
+    join address d on b.addr_no = d.addr_no
+    join likes c on c.rest_bizno = b.rest_bizno and c.users_no = #{usersNo}
+    left join review e on c.rest_bizno = e.rest_bizno
+group by 
+    b.rest_bizno, 
+    b.rest_name, 
+    a.mcls_name, 
+    d.addr_basic,
+    c.rest_bizno
+	</select>
+
+	<update id="updateMyLike" parameterType="restLikeVO">
+		UPDATE LIKES SET LIKE_YN = #{myLike} WHERE REST_BIZNO = #{restBizno} AND USERS_NO = #{userNo}
+	</update>
+	
+	<select id="userReviews" parameterType="int" resultMap="restaurantMap">
+		select * from RESTVIEW
+   		 where USERS_NO = #{usersNo}
+	</select>
+
+</mapper>

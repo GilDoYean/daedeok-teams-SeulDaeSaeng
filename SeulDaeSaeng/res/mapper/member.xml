@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="member">
+
+	<resultMap type="kr.or.ddit.board.vo.BoardVO" id="boardMap">
+      <result column="board_no" property="boardNo"/>
+      <result column="board_level" property="boardLevel"/>
+      <result column="board_title" property="boardTitle"/>
+      <result column="board_con" property="boardCon"/>
+      <result column="board_at" property="boardAt"/>
+      <result column="board_yn" property="boardYn"/>
+      <result column="board_hit" property="boardHit"/>
+      <result column="file_no" property="fileNo"/>
+      <result column="users_no" property="usersNo"/>
+   </resultMap>
+   
+   <resultMap type="kr.or.ddit.member.vo.MemberVO" id="memMap">
+      <result property="usersNo" column="USERS_NO"/>
+      <result property="memName" column="MEM_NAME"/>
+      <result property="memNick" column="MEM_NICK"/>
+      <result property="memBirth" column="MEM_BIRTH"/>
+      <result property="memEmail" column="MEM_EMAIL"/>
+      <result property="memTel" column="MEM_TEL"/>
+      <result property="memClass" column="MEM_CLASS"/>
+      <result property="memRegdt" column="MEM_REGDT"/>
+      <result property="addrNo" column="ADDR_NO"/>
+      
+      <result column="users_id" property="usersId" />
+      <result column="users_pass" property="usersPass" />
+      <result column="mem_addr" property="memAddr" />
+      <result column="atch_file_id" property="atchFileId" />
+      <result column="reg_dt" property="regDt" />
+   </resultMap>
+   
+   <resultMap type="kr.or.ddit.member.vo.UsersVO" id="usersMap">
+      <result property="usersNo" column="USERS_NO"/>
+      <result property="usersRole" column="USERS_ROLE"/>
+      <result property="usersId" column="USERS_ID"/>
+      <result property="usersPass" column="USERS_PASS"/>
+      <result property="usersYn" column="USERS_YN"/>
+   </resultMap>
+   
+   <resultMap type="addrVO" id="addrMap">
+		<result property="addrNo" column="ADDR_NO"/>
+		<result property="addrPost" column="ADDR_POST"/>
+		<result property="addrBasic" column="ADDR_BASIC"/>
+		<result property="addrDetail" column="ADDR_DETAIL"/>
+		<result property="addrLon" column="ADDR_LON"/>
+		<result property="addrLat" column="ADDR_LAT"/>
+		<result property="addrLevel" column="ADDR_LEVEL"/>
+	</resultMap>
+	
+	<select id="memberIdChk" parameterType="String" resultType="int">
+		select count(*) as cnt from users where USERS_ID = #{usersId} 
+		AND USERS_YN IN ('Y', 'S')
+	</select>
+
+	<select id="loginCheck" resultMap="memMap" parameterType="memVO">
+		select*
+		from users
+		where users_id = #{usersId}
+		and users_pass = #{usersPass}
+		and users_yn = 'Y'
+	</select>
+
+	 <insert id="usersJoin" parameterType="kr.or.ddit.member.vo.UsersVO"  useGeneratedKeys="true">
+		<selectKey keyProperty="usersNo" resultType="int" order="BEFORE">
+			select SEQ_USERS_NO.nextval as usersNo from dual
+		</selectKey>
+		INSERT INTO USERS(USERS_NO, USERS_ROLE, USERS_ID, USERS_PASS, USERS_YN)
+		VALUES(#{usersNo}, #{usersRole}, #{usersId}, #{usersPass}, #{usersYn})
+	</insert>
+
+	<insert id="addrJoin" parameterType="kr.or.ddit.member.vo.AddressVO"  useGeneratedKeys="true">
+		<selectKey keyProperty="addrNo" resultType="int" order="BEFORE">
+			select SEQ_ADDR.nextval as addrNo from dual
+		</selectKey>
+			INSERT INTO ADDRESS(ADDR_NO, ADDR_POST, ADDR_BASIC, ADDR_DETAIL, ADDR_LEVEL)
+		    VALUES(#{addrNo}, #{addrPost}, #{addrBasic}, #{addrDetail}, #{addrLevel})
+	</insert>
+
+	<insert id="memberJoin" parameterType="memVO" useGeneratedKeys="true">
+ 		<selectKey keyProperty="usersNo,addrNo" resultType="memVO" order="BEFORE">
+			select SEQ_USERS_NO.currval as "usersNo", SEQ_ADDR.currval as "addrNo" from dual
+		</selectKey>
+		 	INSERT INTO MEMBER(USERS_NO, MEM_NAME, MEM_NICK, MEM_BIRTH, MEM_EMAIL, MEM_TEL, MEM_CLASS, ADDR_NO)
+		    VALUES(#{usersNo}, #{memName}, #{memNick}, #{memBirth}, #{memEmail}, #{memTel}, #{memClass}, #{addrNo})
+	</insert>
+<!-- 	<insert id="memberJoin" parameterType="kr.or.ddit.member.vo.MemberVO"> -->
+<!-- 		 	INSERT INTO MEMBER(USERS_NO, MEM_NAME, MEM_NICK, MEM_BIRTH, MEM_EMAIL, MEM_TEL, MEM_CLASS, ADDR_NO) -->
+<!-- 		    VALUES(#{usersNo}, #{memName}, #{memNick}, #{memBirth}, #{memEmail}, #{memTel}, #{memClass}, #{addrNo}) -->
+<!-- 	</insert> -->
+	
+	<select id="selectUsers" parameterType="String" resultMap="usersMap">
+		select * from USERS where USERS_ID = #{usersId}
+	</select>
+	
+	<select id="selectMember" parameterType="int" resultMap="memMap">
+		select * from MEMBER where USERS_NO = #{usersNo}
+	</select>
+	
+	<select id="selectAddr" parameterType="int" resultMap="addrMap">
+		select * from ADDRESS where ADDR_NO = #{addrNo}
+	</select>
+	
+	<update id="addrModify" parameterType="addrVO">
+      update ADDRESS set ADDR_POST = #{addrPost}, ADDR_BASIC = #{addrBasic}, ADDR_DETAIL = #{addrDetail}
+       where ADDR_NO = #{addrNo}
+   </update>
+
+   <update id="memberModify" parameterType="memVO">
+      update MEMBER set MEM_NAME = #{memName}, MEM_NICK = #{memNick}, MEM_BIRTH = #{memBirth}, MEM_EMAIL = #{memEmail}, MEM_TEL = #{memTel}
+       where USERS_NO = #{usersNo}
+   </update>
+   
+   <update id="memberUnregister" parameterType="String">
+      update USERS set USERS_YN = 'N'
+       where USERS_ID = #{usersId}
+   </update>
+
+   <update id="pwModify" parameterType="hashMap">
+      update USERS set USERS_PASS = #{usersPass}
+       where USERS_ID = #{usersId}
+   </update>
+   
+   <select id="memberBoardList" parameterType="int" resultMap="boardMap">
+   		select * from BOARD where USERS_NO = #{usersNo} AND BOARD_YN = 'Y'
+		 order by BOARD_NO desc
+   </select>
+  
+	<select id="getMemDetail" parameterType="String" resultMap="memMap">
+		select a.* from member a,users b where a.users_no = b.users_no and b.users_id= #{usersId}
+	</select>
+	
+	<select id="getUsersDetail" parameterType="String" resultMap="usersMap">
+		select * from users where users_id= #{usersId}
+	</select>
+	
+	<select id="checkFindId" parameterType="memVO" resultType="String">
+       select users.users_id from member,users where member.mem_name= #{memName} and member.mem_tel =  #{memTel} and member.users_no=users.users_no
+	</select>
+	
+	<select id="checkFindPw" parameterType="memVO" resultType="String">
+		select users.users_pass from member,users where users.users_id= #{usersId} and member.mem_email = #{memEmail} and member.users_no=users.users_no
+	</select>
+	
+	<select id="checking" parameterType="String" resultType="String">
+	    select member.mem_Name from member where mem_name=#{memName}
+	</select>
+	
+	<select id="getAllMember" resultMap="memMap">
+	select *
+	from member
+	order by USERS_NO desc
+    </select>
+    
+    <select id="getAllAddr" resultMap="addrMap">
+	select *
+	from address
+	order by addr_NO desc
+    </select>
+	
+</mapper>

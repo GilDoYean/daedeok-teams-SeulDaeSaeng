@@ -1,0 +1,476 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="board">
+
+<resultMap type="kr.or.ddit.board.vo.BoardVO" id="boardMap"> <!-- 1 -->
+<result column="board_no" property="boardNo"/>
+<result column="board_level" property="boardLevel"/>
+<result column="board_title" property="boardTitle"/>
+<result column="board_con" property="boardCon"/>
+<result column="board_at" property="boardAt"/>
+<result column="board_yn" property="boardYn"/>
+<result column="board_hit" property="boardHit"/>
+<result column="file_no" property="fileNo"/>
+<result column="users_no" property="usersNo"/>
+</resultMap>
+	
+<resultMap type="kr.or.ddit.member.vo.MemberVO" id="memberMap"> <!-- 1 -->
+<result column="users_no" property="usersNo"/>
+<result column="mem_name" property="memName"/>
+<result column="mem_nick" property="memNick"/>
+<result column="mem_birth" property="memBirth"/>
+<result column="mem_email" property="memEmail"/>
+<result column="mem_tel" property="memTel"/>
+<result column="mem_class" property="memClass"/>
+<result column="mem_regdt" property="memRegdt"/>
+<result column="addr_no" property="addrNo"/>
+</resultMap>
+
+<resultMap type="kr.or.ddit.board.vo.ReplyVO" id="replyMap"> <!-- 1 -->
+<result column="reply_no" property="replyNo"/>
+<result column="reply_con" property="replyCon"/>
+<result column="reply_yn" property="replyYn"/>
+<result column="board_no" property="boardNo"/>
+<result column="users_no" property="usersNo"/>
+<result column="reply_dt" property="replyDt"/>
+</resultMap>
+
+<resultMap type="kr.or.ddit.member.vo.UsersVO" id="usersMap"> <!-- 1 -->
+<result column="users_no" property="usersNo"/>
+<result column="users_role" property="usersRole"/>
+<result column="users_id" property="usersId"/>
+<result column="users_pass" property="usersPass"/>
+<result column="users_yn" property="usersYn"/>
+</resultMap>
+
+<resultMap type="kr.or.ddit.board.vo.HomeworkVO" id="hwMap"> <!-- 1 -->
+<result column="hw_no" property="hwNo"/>
+<result column="hw_title" property="hwTitle"/>
+<result column="hw_con" property="hwCon"/>
+<result column="hw_start" property="hwStart"/>
+<result column="hw_end" property="hwEnd"/>
+<result column="users_no" property="usersNo"/>
+<result column="hw_class" property="hwClass"/>
+</resultMap>
+
+<resultMap type="kr.or.ddit.board.vo.FileDetailVO" id="fileMap"> <!-- 1 -->
+<result column="file_no" property="fileNo"/>
+<result column="file_savepath" property="fileSavepath"/>
+<result column="file_ogname" property="fileOgname"/>
+<result column="file_savednm" property="fileSavednm"/>
+<result column="file_size" property="fileSize"/>
+<result column="file_ext" property="fileExt"/>
+<result column="file_dt" property="fileDt"/>
+<result column="file_level" property="fileLevel"/>
+</resultMap>
+
+<resultMap type="kr.or.ddit.board.vo.FileShareVO" id="fileShareMap"> <!-- 1 -->
+<result column="share_no" property="shareNo"/>
+<result column="file_no" property="fileNo"/>
+<result column="users_no" property="usersNo"/>
+</resultMap>
+
+<resultMap type="kr.or.ddit.board.vo.HwSubmitVO" id="hwSubmitMap"> <!-- 1 -->
+<result column="submit_no" property="submitNo"/>
+<result column="submit_dt" property="submitDt"/>
+<result column="file_no" property="fileNo"/>
+<result column="hw_no" property="hwNo"/>
+<result column="users_no" property="usersNo"/>
+</resultMap>
+	 
+<resultMap type="kr.or.ddit.board.vo.StoryVO" id="storyMap"> <!-- 1 -->
+<result column="story_no" property="storyNo"/>
+<result column="story_con" property="storyCon"/>
+<result column="story_yn" property="storyYn"/>
+<result column="story_at" property="storyAt"/>
+<result column="file_no" property="fileNo"/>
+<result column="users_no" property="usersNo"/>
+</resultMap>
+
+<resultMap type="kr.or.ddit.board.vo.FilesVO" id="filesMap"> <!-- 1 -->
+<result column="file_no" property="fileNo"/>
+<result column="file_yn" property="fileYn"/>
+</resultMap>
+
+<select id="allBoardList" resultMap="boardMap">
+		select *
+        from board
+        where board_yn = 'Y'
+        and board_level &lt; 300
+        order by case when board_level = 3 then 0 else 1 end, board_no desc
+</select>
+
+<select id="searchAllBoardList" parameterType="Map" resultMap="boardMap">
+		select b.*
+		from board b, member m
+		where b.users_no = m.users_no
+		and b.board_yn = 'Y'
+		and b.board_level &lt; 300
+	    <if test='searchOption == "all"'>
+	      and (
+	        b.board_title like '%' || #{searchText} || '%'
+	        or b.board_con like '%' || #{searchText} || '%'
+	        or m.mem_nick like '%' || #{searchText} || '%'
+	      )
+	    </if>
+	    <if test='searchOption == "title"'>
+	      and b.board_title like '%' || #{searchText} || '%'
+	    </if>
+	    <if test='searchOption == "content"'>
+	      and b.board_con like '%' || #{searchText} || '%'
+	    </if>
+	    <if test='searchOption == "nickname"'>
+	      and m.mem_nick like '%' || #{searchText} || '%'
+	    </if>
+		order by case when b.board_level = 3 then 0 else 1 end, b.board_no desc
+</select>
+
+<select id="searchSelectBoardList" parameterType="Map" resultMap="boardMap">
+		select b.*
+		from board b, member m
+		where b.users_no = m.users_no
+		and b.board_yn = 'Y'
+		and board_level = #{boardLevel}
+	    <if test='searchOption == "all"'>
+	      and (
+	        b.board_title like '%' || #{searchText} || '%'
+	        or b.board_con like '%' || #{searchText} || '%' 
+	        or m.mem_nick like '%' || #{searchText} || '%'
+	      )
+	    </if>
+	    <if test='searchOption == "title"'>
+	      and b.board_title like '%' || #{searchText} || '%'
+	    </if>
+	    <if test='searchOption == "content"'>
+	      and b.board_con like '%' || #{searchText} || '%'
+	    </if>
+	    <if test='searchOption == "nickname"'>
+	      and m.mem_nick like '%' || #{searchText} || '%' 
+	    </if>
+		order by case when b.board_level = 3 then 0 else 1 end, b.board_no desc
+</select>
+
+<select id="getBoardDetail" parameterType="int" resultMap="boardMap">
+		select *
+	    from board
+	    where board_no =#{boardNo}
+</select>
+
+<select id="selectBoardList" parameterType="int" resultMap="boardMap">
+		select *
+	  	from board
+	  	where board_level =#{boardLevel} and board_yn = 'Y'
+	  	order by board_no desc
+</select>
+
+<select id="selectClassBoardList" parameterType="int" resultMap="boardMap">
+		select *
+	  	from board a, users b
+	  	where board_level =#{levelChk} and board_yn = 'Y'
+        and a.users_no = b.users_no
+	  	order by case when b.users_role = 1 then 0 else 1 end, a.board_no desc
+</select>
+
+<select id="getWriterDetail" parameterType="Map" resultMap="memberMap">
+		SELECT MEMBER.* FROM MEMBER,BOARD
+        WHERE MEMBER.USERS_NO = BOARD.USERS_NO
+        AND BOARD.USERS_NO = #{usersNo} AND BOARD.BOARD_NO = #{boardNo}
+</select>
+
+<select id="getReplyWriterDetail" parameterType="Map" resultMap="memberMap">
+		SELECT MEMBER.* FROM MEMBER,REPLY
+        WHERE MEMBER.USERS_NO = REPLY.USERS_NO
+        AND REPLY.USERS_NO = #{usersNo} AND REPLY.reply_no = #{replyNo}
+</select>
+
+<select id="getReplyList" parameterType="int" resultMap="replyMap">
+		select *
+        from reply
+        where board_no =#{boardNo}
+        and reply_yn='Y'
+        order by reply_no desc
+</select>
+
+<insert id="insertBoard" parameterType="brdVO" useGeneratedKeys="true">
+	<selectKey keyProperty="boardNo" resultType="int" order="BEFORE">
+		select seq_board.nextval from dual
+	</selectKey>
+	insert into board(
+		board_no, board_level, board_title, board_con, board_at, board_hit, file_no, users_no
+	)values(
+		#{boardNo}, #{boardLevel}, #{boardTitle}, #{boardCon}, sysdate, 0, #{fileNo}, #{usersNo}
+	)
+</insert>
+
+<insert id="insertReply" parameterType="kr.or.ddit.board.vo.ReplyVO" useGeneratedKeys="true">
+     <selectKey keyProperty="replyNo" resultType="int" order="BEFORE">
+        select seq_reply.nextval from dual
+     </selectKey>
+		INSERT INTO reply 
+		(reply_no, reply_con, reply_yn, board_no, users_no, reply_dt) 
+		VALUES (#{replyNo},#{replyCon},'Y',#{boardNo}, #{usersNo}, sysdate)
+
+</insert>
+
+<insert id="insertHomework" parameterType="Map" useGeneratedKeys="true">
+	<selectKey keyProperty="hwNo" resultType="int" order="BEFORE">
+		select seq_homework.nextval from dual
+	</selectKey>
+        insert into homework(hw_no, hw_title, hw_con, hw_start, hw_end, users_no,hw_class)
+        values(#{hwNo}, #{hwTitle}, #{hwCon},#{hwStart}, #{hwEnd}, #{usersNo}, #{hwClass})
+</insert>
+
+<update id="updateBoard" parameterType="Map">
+		update board
+		set board_title = #{boardTitle}, board_con = #{boardCon}
+		where board_no = #{boardNo}
+</update>
+
+<update id="updateReply" parameterType="Map">
+		update reply
+		set reply_con = #{replyCon}
+		where reply_no = #{replyNo}
+</update>
+
+<update id="deleteReply" parameterType="int">
+		update reply
+		set reply_yn='N'
+		where reply_no = #{replyNo}
+</update>
+
+<update id="deleteBoard" parameterType="int">
+        update board set board_yn = 'N' where board_no =#{boardNo}
+</update>
+
+<update id="reportBoard" parameterType="int">
+		update board set report_yn = 'Y' where board_no = #{boardNo}
+</update>
+
+<update id="updateHit" parameterType="int">
+        update board set board_hit = board_hit + 1 where board_no =#{boardNo}
+</update>
+
+<select id="getUsersDetail" parameterType="int" resultMap="usersMap">
+		select *
+        from users
+        where users_no =#{usersNo}
+</select>
+
+<select id="getMemberDetail" parameterType="int" resultMap="memberMap">
+		select *
+        from member
+        where users_no =#{usersNo}
+</select>
+
+<select id="getClassNoticeList" parameterType="int" resultMap="boardMap">
+		select a.*
+        from board a,users b
+        where a.board_level = #{boardLevel} and a.board_yn = 'Y' and a.users_no = b.users_no and b.users_role = 1
+</select>
+
+<select id="getHwList" parameterType="int" resultMap="hwMap">
+		select *
+        from homework
+        where hw_class=#{hwClass} and hw_yn='Y'
+        order by hw_no desc
+</select>
+
+<select id="getHwDetail" parameterType="int" resultMap="hwMap">
+		select *
+	    from homework
+	    where hw_no =#{hwNo}
+</select>
+
+<select id="getHwWriterDetail" parameterType="Map" resultMap="memberMap">
+		SELECT MEMBER.* FROM MEMBER,HOMEWORK
+        WHERE MEMBER.USERS_NO = HOMEWORK.USERS_NO
+        AND HOMEWORK.USERS_NO = #{usersNo} AND HOMEWORK.HW_NO = #{hwNo}
+</select>
+
+<select id="getFileList" parameterType="int" resultMap="fileMap">
+		select *
+        from file_detail
+        where file_level =#{fileLevel}
+        order by file_no desc
+</select>
+
+<select id="getFileDetail" parameterType="int" resultMap="fileMap">
+		select *
+	    from file_detail
+	    where file_no =#{fileNo}
+</select>
+
+<select id="searchClassBoardList" parameterType="Map" resultMap="boardMap">
+		select b.*
+		from board b, member m, users u
+		where b.users_no = m.users_no and b.users_no = u.users_no
+		and b.board_yn = 'Y'
+		and b.board_level = ${level}
+		<if test='boardDiv.equals("notice")'>
+        and u.users_role = 1
+		</if>
+	    <if test='searchOption == "all"'>
+	      and (
+	        b.board_title like '%' || #{searchText} || '%'
+	        or b.board_con like '%' || #{searchText} || '%'
+	        or m.mem_nick like '%' || #{searchText} || '%'
+	      )
+	    </if>
+	    <if test='searchOption == "title"'>
+	      and b.board_title like '%' || #{searchText} || '%'
+	    </if>
+	    <if test='searchOption == "content"'>
+	      and b.board_con like '%' || #{searchText} || '%'
+	    </if>
+	    <if test='searchOption == "nickname"'>
+	      and m.mem_nick like '%' || #{searchText} || '%'
+	    </if>
+		order by case when u.users_role = 1 then 0 else 1 end, b.board_no desc
+</select>
+
+<insert id="insertFileShare" parameterType="kr.or.ddit.board.vo.FileShareVO" useGeneratedKeys="true">
+	<selectKey keyProperty="shareNo" resultType="int" order="BEFORE">
+		select seq_fileshare.nextval from dual
+	</selectKey>
+	    insert into file_SHARE(share_no, file_no, users_no)
+        values(#{shareNo},#{fileNo},#{usersNo})
+</insert>
+
+<select id="getFile" parameterType="int" resultMap="fileMap">
+		select a.*
+	    from file_detail a, board b
+	    where b.file_no = a.file_no and b.board_no=#{boardNo}
+</select>
+
+<select id="getHwTeacher" parameterType="int" resultMap="memberMap">
+		select a.*
+	    from member a, homework b
+	    where a.users_no = b.users_no and b.hw_no=#{hwNo}
+</select>
+
+<insert id="studentSubmitHw" parameterType="kr.or.ddit.board.vo.HwSubmitVO" useGeneratedKeys="true">
+	<selectKey keyProperty="submitNo" resultType="int" order="BEFORE">
+		select seq_hwsubmit.nextval from dual
+	</selectKey>
+	insert into hw_submit(SUBMIT_NO, submit_dt, file_no, hw_no, users_no)
+	values(#{submitNo}, sysdate, #{fileNo}, #{hwNo}, #{usersNo})
+</insert>
+
+<select id="mySubmit" parameterType="Map" resultMap="fileMap">
+	    select b.*
+	    from hw_submit a, file_detail b
+	    where a.hw_No = #{hwNo} and a.users_No = #{usersNo} and a.file_No = b.file_No 
+	    order by b.file_no desc
+</select>
+
+<insert id="insertStory" parameterType="kr.or.ddit.board.vo.StoryVO" useGeneratedKeys="true">
+	<selectKey keyProperty="storyNo" resultType="int" order="BEFORE">
+		select seq_story.nextval from dual
+	</selectKey>
+	    insert into story(
+		   story_no, story_con, story_yn, story_at, file_no, users_no
+	    )values(
+		   #{storyNo}, #{storyCon}, 'Y', sysdate, #{fileNo}, #{usersNo}
+	    )
+</insert>
+
+<select id="getStoryList" parameterType="int" resultMap="storyMap">
+	    select *
+	    from story
+	    where users_no=#{usersNo}
+	    order by story_no desc
+</select>
+
+<select id="getStoryTime" parameterType="int" resultType="String">
+       select to_char(story_at, 'yyyy-MM-dd HH24:MI:SS')
+       from story
+       where story_no = #{storyNo}
+</select>
+
+<select id="getStoryOne" parameterType="int" resultMap="storyMap">
+	    select *
+	    from story
+	    where story_no=#{storyNo}
+</select>
+
+<select id="getMemberBoardReply" parameterType="int" resultType="java.lang.Integer">
+	select DISTINCT(BOARD_NO) as BOARD_NO from REPLY 
+    where USERS_NO = #{usersNo} and REPLY_YN = 'Y'
+    order by BOARD_NO desc
+</select>
+
+<select id="getMemberBoardOne" parameterType="int" resultMap="boardMap">
+	select * from BOARD 
+	where BOARD_NO = #{boardNo} AND BOARD_YN = 'Y'
+</select>
+
+<update id="deleteStory" parameterType="int">
+        update story set story_yn = 'N' where story_no =#{storyNo}
+</update>
+
+<select id="allStoryList" resultMap="storyMap">
+		select *
+        from story
+        where story_yn = 'Y'
+        order by story_no desc
+</select>
+
+<select id="getHwFileList" parameterType="int" resultMap="fileMap">
+       select c.*
+       from homework a,hw_submit b, file_detail c
+       where b.hw_no = a.hw_no and a.hw_no = #{hwNo} and c.file_no = b.file_no
+</select>
+
+<select id="getHwSubmitMem" parameterType="int" resultMap="memberMap">
+       select a.*
+       from member a, hw_submit b, file_detail c
+       where b.file_no = #{fileNo} and c.file_no = b.file_no and b.users_no = a.users_no
+</select>
+
+<insert id="saveFiles" useGeneratedKeys="true">
+	<selectKey keyProperty="fileNo" resultType="int" order="BEFORE">
+		select seq_file.nextval from dual
+	</selectKey>
+	    insert into files(file_no,file_yn)
+        values(#{fileNo},'Y')
+</insert>
+
+<insert id="saveFileDetail" parameterType="kr.or.ddit.board.vo.FileDetailVO"  useGeneratedKeys="true">
+        insert into file_detail(file_no, file_savepath, file_ogname, file_savednm, file_size, file_ext, file_dt, file_level)
+        values(#{fileNo}, #{fileSavepath}, #{fileOgname},#{fileOgname}, #{fileSize}, #{fileExt}, sysdate, #{fileLevel})
+</insert>
+
+<select id="myBoardList" parameterType="int" resultMap="boardMap">
+	select * from BOARD
+	where USERS_NO = #{usersNo} AND BOARD_YN = 'Y'
+	order by BOARD_NO desc
+</select>
+
+<update id="deleteHomework" parameterType="int">
+	update homework
+	set hw_yn = 'N'
+	where hw_no = #{hwNo}
+</update>
+
+<update id="editHomework" parameterType="Map">
+	update homework
+	set hw_title=#{hwTitle}, hw_con=#{hwCon}, hw_start=#{hwStart}, hw_end=#{hwEnd}
+	where hw_no=#{hwNo}
+</update>
+
+<update id="updateStory" parameterType="int">
+		update story
+		set story_yn='N'
+		where story_no = #{storyNo}
+</update>
+
+<select id="getUserRole" parameterType="int" resultType="int">
+	select users_role
+	from users
+	where users_no=#{usersNo}
+</select>
+
+
+</mapper>

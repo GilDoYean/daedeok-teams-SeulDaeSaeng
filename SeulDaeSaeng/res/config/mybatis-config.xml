@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+  <configuration>
+  
+  <properties resource="db.properties" />
+  
+  <settings>
+  	<!-- 
+  		데이터 등록시 해당 속성값이 존재하지 않으면 '부적합한 열유형:1111' 예외발생함.
+  		이 경우 해당 jdbcType타입을 명시적으로 알려주든지 아래와 같이 NULL에 대해 특정값으로 설정 가능함.
+  	 -->
+	<setting name="jdbcTypeForNull" value="NULL"/>  
+  
+  </settings>
+  
+
+  <typeAliases>
+  	<typeAlias type="kr.or.ddit.board.vo.BoardVO" alias="brdVO"/>
+  	<typeAlias type="kr.or.ddit.member.vo.MemberVO" alias="memVO"/>
+  	<typeAlias type="kr.or.ddit.restaurant.vo.RestaurantVO" alias="restVO"/>
+  	<typeAlias type="kr.or.ddit.member.vo.UsersVO" alias="usersVO"/>
+  	<typeAlias type="kr.or.ddit.member.vo.AddressVO" alias="addrVO"/>
+  	<typeAlias type="kr.or.ddit.restaurant.vo.ReviewVO" alias="reviewVO"/>
+  	<typeAlias type="kr.or.ddit.restaurant.vo.restLikeVO" alias="restLikeVO"/>
+  </typeAliases>
+  
+  	<environments default="dev">
+  		<environment id="dev">
+  			<transactionManager type="JDBC" />
+  			<dataSource type="POOLED">
+  				<property name="driver" value="${driver}"/>
+  				<property name="url" value="${url}"/>
+  				<property name="username" value="${username}"/>
+  				<property name="password" value="${password}"/>
+  				<property name="poolMaximumActiveConnections" value="2"/> 
+				<property name="poolMaximumIdleConnections" value="2"/>
+  			</dataSource>
+  		</environment>
+  	</environments>
+  
+  	
+  	<mappers>
+  		<mapper resource="mapper/board.xml" />
+  		<mapper resource="mapper/member.xml" />
+  		<mapper resource="mapper/restaurant.xml" />
+  		<mapper resource="mapper/admin.xml" />
+  		<mapper resource="mapper/contact.xml" />
+  		<mapper resource="mapper/report.xml" />
+  	</mappers>
+  
+  
+  
+  </configuration>

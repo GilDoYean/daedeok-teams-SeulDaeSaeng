@@ -1,0 +1,14 @@
+.testimonials {
+    margin-top: 0;
+    background-color: var(--color-white);
+    position: relative;
+}
+.testimonials .section-header{
+    padding-bottom: 0;
+}
+.testimonials .container {
+    padding-top: 80px;
+}
+.testimonials .cta-btn{
+    padding: 8px 40px;
+}
