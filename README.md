@@ -3,7 +3,7 @@
   
 ### 더욱 슬기로운 대덕인재개발원 생활을 위해, 슬.대.생 🌞
 
-<img src="https://img.shields.io/badge/release-2024.09.23-critical?style=flat&logo=google-chrome&logoColor=white" />
+<img src="https://img.shields.io/badge/release-2024.05.24-critical?style=flat&logo=google-chrome&logoColor=white" />
 </div>
 
 ## :smiley: 소개
