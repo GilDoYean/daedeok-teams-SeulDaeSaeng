@@ -1,5 +1,5 @@
 <div align="center">
-<img src="" />
+<img src="https://github.com/user-attachments/assets/62657463-6153-42b6-a34f-2e8426513c4c" />
   
 ### 더욱 슬기로운 대덕인재개발원 생활을 위해, 슬.대.생 🌞
 
